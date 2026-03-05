@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sentiment Analysis For Restaurant Feedback</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-image: url("static/Analyzing-Sentiment-of-Restaurant-Reviews.jpeg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+        }
+        .container {
+            background-color: rgba(217, 203, 203, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        label, h1, h2, h3 input, p, ul {
+            color: #000;
+        }
+        .pie-chart, .bar-chart {
+            max-width: 50%;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .arrow-btn {
+            cursor: pointer;
+            font-size: 24px;
+            margin: 0 15px;
+            color: #007bff;
+        }
+        .arrow-btn:hover {
+            color: #0056b3;
+        }
+        .dropdown-menu {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        /* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+/* Full Page Background */
+body {
+    background: url("static/Analyzing-Sentiment-of-Restaurant-Reviews.png") no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+}
+
+/* Glassmorphism Container */
+.container {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease-in-out;
+}
+
+/* Header Styling */
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #0b0a0a, #1a1919);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glowText 1.5s infinite alternate;
+}
+
+/* Glow Animation 
+@keyframes glowText {
+    0% { text-shadow: 0 0 10px rgba(255, 117, 140, 0.7); }
+    100% { text-shadow: 0 0 20px rgba(255, 117, 140, 1); }
+}*/
+
+/* Input Fields */
+input, .form-control-file {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 14px;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+}
+
+input:focus {
+    border-color: #00c6ff;
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #ff9800, #ff5722);
+    border: none;
+    padding: 14px 30px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 5px 15px rgba(255, 152, 0, 0.5);
+}
+
+.btn-primary:hover {
+    transform: scale(1.08);
+    box-shadow: 0px 5px 20px rgba(255, 152, 0, 0.9);
+}
+
+/* Dropdown */
+.dropdown-menu {
+    background: rgba(0, 0, 0, 0.9);
+    border: none;
+    padding: 12px;
+}
+
+.dropdown-item {
+    color: #fff;
+    transition: all 0.3s ease-in-out;
+    font-weight: 600;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.08);
+}
+
+/* Animated Bar Chart */
+.bar-chart {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    /* background: linear-gradient(135deg, #0072ff, #00c6ff); */
+    border-radius: 15px;
+    box-shadow: 0px 6px 20px rgba(0, 114, 255, 0.5);
+    transition: all 0.4s ease-in-out;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s forwards;
+}
+
+/* Pie Chart */
+.pie-chart {
+    max-width: 45%;
+    display: inline-block;
+    vertical-align: top;
+    border-radius: 15px;
+    padding: 15px;
+    /* background: linear-gradient(135deg, #ff7eb3, #ff758c); */
+    box-shadow: 0px 6px 20px rgba(255, 117, 140, 0.6);
+    transition: all 0.4s ease-in-out;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s 0.2s forwards;
+}
+
+/* Bar & Pie Chart Hover */
+.bar-chart:hover, .pie-chart:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 30px rgba(0, 114, 255, 0.8);
+}
+
+/* Fade-in Animation */
+@keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Arrow Navigation */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.form-control-file, #current-category, #category-reviews h3{
+    color: #000;
+}
+
+
+.arrow-btn {
+    cursor: pointer;
+    font-size: 36px;
+    margin: 0 20px;
+    color: #ff9800;
+    transition: all 0.3s ease-in-out;
+}
+
+.arrow-btn:hover {
+    transform: scale(1.2);
+    color: #ff5722;
+}
+
+/* Review Cards */
+.review-category {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s 0.5s forwards;
+}
+
+.review-category:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 35px rgba(255, 152, 0, 0.8);
+}
+
+/* Error Message */
+.alert {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Shake Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Sentiment Analysis For Restaurant Feedback</h1>
+
+    <!-- Form to analyze individual review -->
+    <form method="POST" action="/analyze" class="mt-4">
+        <div class="form-group">
+            <label for="review">Enter your review:</label>
+            <input type="text" class="form-control" id="review" name="review" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Analyze Review</button>
+    </form>
+
+    <hr>
+
+    <!-- Form to upload a CSV file for review analysis -->
+    <form method="POST" action="/analyze" enctype="multipart/form-data" class="mt-4">
+        <div class="form-group">
+            <label for="file">Or upload a CSV file:</label>
+            <input type="file" class="form-control-file" id="file" name="file" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload CSV</button>
+    </form>
+
+    <hr>
+
+    <!-- Display analysis result for a single review -->
+    {% if review %}
+    <h2>Analysis Result:</h2>
+    <p><strong>Review:</strong> {{ review }}</p>
+    {% if translated_review %}
+        <p><strong>Translated Review:</strong> {{ translated_review }}</p>
+    {% endif %}
+    <p><strong>Sentiment:</strong> {{ sentiment }} (Score: {{ text_score }})</p>
+    {% endif %}
+
+    <!-- Display sentiment distribution visualizations -->
+    {% if visualizations %}
+        <h2>Sentiment Distribution:</h2>
+        <div class="toggle-container">
+            <span class="arrow-btn" id="prev-category">&#9664;</span>
+            <h3 id="current-category"></h3>
+            <span class="arrow-btn" id="next-category">&#9654;</span>
+        </div>
+        <div id="chart-container">
+            {% for category, visualization in visualizations.items() %}
+                <div class="category-chart d-none" data-category="{{ category }}">
+                    <div class="row">
+                        <div class="col-md-6 bar-chart">
+                            <img src="data:image/png;base64,{{ visualization['bar'] }}" class="img-fluid" alt="Bar Chart">
+                        </div>
+                        <div class="col-md-6 pie-chart">
+                            <img src="data:image/png;base64,{{ visualization['pie'] }}" class="img-fluid" alt="Pie Chart">
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Summary of categorized reviews -->
+    {% if summary %}
+        <h2>Summary:</h2>
+        <ul>
+        {% for category, stats in summary.items() %}
+            <li><strong>{{ category.capitalize() }}:</strong> 
+                Total: {{ stats.total }}, 
+                Positive: {{ stats.positive }}, 
+                Neutral: {{ stats.neutral }}, 
+                Negative: {{ stats.negative }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Detailed categorized review results with dropdown menu -->
+    {% if categorized_results %}
+        <h2>Detailed Sentiment Results by Category:</h2>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                Select Category
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% for category in categorized_results.keys() %}
+                    <a class="dropdown-item category-option" href="#" data-category="{{ category }}">{{ category.capitalize() }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="category-reviews">
+            {% for category, reviews in categorized_results.items() %}
+                <div class="review-category d-none" data-category="{{ category }}">
+                    <h3>{{ category.capitalize() }} Category</h3>
+                    <ul>
+                        {% for review in reviews %}
+                            <li>
+                                <strong>Review:</strong> {{ review['Review'] }} <br>
+                                {% if review['Translated Review'] %}
+                                    <strong>Translated Review:</strong> {{ review['Translated Review'] }} <br>
+                                {% endif %}
+                                <strong>Sentiment:</strong> {{ review['Sentiment'] }} (Score: {{ review['Score'] }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Error message display -->
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+</div>
+
+<!-- Bootstrap JS dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        let categories = $(".category-chart").map(function () {
+            return $(this).data("category");
+        }).get();
+        let currentIndex = 0;
+
+        function showCategory(index) {
+            $(".category-chart").addClass("d-none");
+            $(`.category-chart[data-category="${categories[index]}"]`).removeClass("d-none");
+            $("#current-category").text(categories[index]);
+        }
+
+        $("#prev-category").click(function () {
+            currentIndex = (currentIndex - 1 + categories.length) % categories.length;
+            showCategory(currentIndex);
+        });
+
+        $("#next-category").click(function () {
+            currentIndex = (currentIndex + 1) % categories.length;
+            showCategory(currentIndex);
+        });
+
+        showCategory(currentIndex);
+
+        $(".category-option").click(function () {
+            let selectedCategory = $(this).data("category");
+            $(".review-category").addClass("d-none");
+            $(`.review-category[data-category="${selectedCategory}"]`).removeClass("d-none");
+        });
+    });
+</script>
+
+</body>
+</html>
